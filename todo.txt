@@ -1,0 +1,16 @@
+Done
+0) Getting the index page and a topic page
+1) Getting selectors with cheerio to get Lithuanian's word and hint
+2) Gather all audio resources
+	When trying to download all the audio resources:
+	Many requests get: { [Error: socket hang up] code: 'ECONNRESET' }
+
+	? --> Need to slow down the simultaneous requests (or queue up up to 6 concurrent ones or so)
+	Answer: run multiple times but only make extra requests for those that failed
+
+3) Output database in pretty json (sorted database!)
+
+
+TODO
+4) Translate the topic words with audio but no English
+

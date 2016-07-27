@@ -6,6 +6,7 @@
 var fs = require('fs')
 var request = require('request')
 var $ = require('cheerio')
+var beautify = require("json-beautify");
 
 var downloadFile = function(url, path) {
     console.log('downloading... ' + url)
@@ -19,10 +20,18 @@ var downloadFile = function(url, path) {
       .pipe(stream)
 };
 
+var getFileName = function(url) {
+  var name = null;
+  var idx = url.lastIndexOf('/')
+  if (idx > 0) {
+    name = url.substring(idx+1)
+  }
+  return name  
+}
+
 var downloadAudioResource = function(url, folder) {
-	var idx = url.lastIndexOf('/')
-	if (idx > 0) {
-		var name = url.substring(idx+1)
+  var name = getFileName(url)
+  if (name) {
     var isAudioFile = (name && name.substring(name.length-4) === '.mp3');
 
     if (isAudioFile) {
@@ -32,8 +41,9 @@ var downloadAudioResource = function(url, folder) {
           downloadFile(url, path)
         }
         else {
+          // Sometimes, we get: { [Error: socket hang up] code: 'ECONNRESET' }
           var stats = fs.statSync(path)
-          if (stats["size"] === 0) {
+          if (stats["size"] === 0) { // Retry download
             console.log('File size is 0: ' + name)
             downloadFile(url, path)
           }
@@ -46,40 +56,92 @@ var downloadAudioResource = function(url, folder) {
   }
 }
 
-var bookPathUrl = 'http://www.goethe-verlag.com/book2/EN/ENLT/';
+const bookPathUrl = 'http://www.goethe-verlag.com/book2/EN/ENLT/';
+const databaseFilename = 'lithuanian.json';
 
-var getTopicPage = function(err, resp, html) {
-  if (err) return console.error(err)
-  var parsedHTML = $.load(html)
+var database = []
 
-  console.log('getTopicPage')  
-  // var words = []
-  // var sounds = []
+var outputDatabase = function() {
+  var sorted = database.sort(function(right, left) {
+    var a = parseInt(right.topic)
+    var b = parseInt(left.topic)
+    return a - b
+  });
 
-  var sel = 'audio > source'
-  parsedHTML(sel).each(function(i, audio) {
-    var $audio = $(audio)
-    var src = $audio.attr('src')
-    console.log('adding... ' + src)
-
-    downloadAudioResource(src, 'audio')
-
-    var columns = $audio.parent().parent().siblings();
-
-    var english = $(columns[0]).text(); // This works!
-    var $lithuanian = $($(columns[1]).children()[0]).children();
-
-    var hint = $($lithuanian[0]).text();
-    var lithuanian = $($lithuanian[1]).text();
-
-    console.log(english, lithuanian, src)
-  })
+  // var json = JSON.stringify(sorted);
+  var json = beautify(sorted, null, 2, 80)
+  console.log(json)
+  fs.writeFileSync(databaseFilename, json);
 }
 
-var processTopic = function(relativeUrl) {
+var getTopicPage = function(topic) {
+  return function(err, resp, html) {
+    if (err) return console.error(err)
+    let parsedHTML = $.load(html)
+
+    console.log('getTopicPage: ' + topic)
+
+    let words = []
+
+    let sel = 'audio > source'
+    parsedHTML(sel).each(function(i, audio) {
+      var entry;
+      let $audio = $(audio)
+      let src = $audio.attr('src')
+      console.log('adding... ' + src)
+      // downloadAudioResource(src, 'audio')
+
+      let columns = $audio.parent().parent().siblings();
+      let english = $(columns[0]).text().trim();
+      let lithuanianNodes = $($(columns[1]).children()[0]).children();
+
+      if (lithuanianNodes && lithuanianNodes.length > 1) {
+        let hint = $(lithuanianNodes[0]).text().trim();
+        let lithuanian = $(lithuanianNodes[1]).text().trim();
+
+        entry = {
+          english,
+          lithuanian,
+          hint,
+          audio: getFileName(src)
+        }
+        console.log(english, lithuanian, src)
+      } else {
+        // TODO: get English translation (from the table coming before!)
+        // More cheerio traversing!
+        let lithuanian = english // hack
+        entry = {
+          lithuanian,
+          audio: getFileName(src)
+        }        
+        console.log(lithuanian, src)
+      }
+      words.push(entry)
+    })
+    database.push({
+      topic,
+      words
+    })
+  };
+}
+
+var findTopic = function(topic) {
+  for (let i = 0; i < database.length; i++) {
+    var entry = database[i];
+    if (entry.topic === topic) {
+      return true;
+    }
+  }
+  return false;
+}
+
+var processTopic = function(relativeUrl, topic) {
   var url = bookPathUrl + relativeUrl;
   console.log(url);
-  request(url, getTopicPage)
+
+  if (!findTopic(topic)) {
+    request(url, getTopicPage(topic))
+  }
 }
 
 var getIndex = function(err, resp, html) {
@@ -93,16 +155,24 @@ var getIndex = function(err, resp, html) {
 
   parsedHTML(sel).each(function(i, link) {
     var href = $(link).attr('href')
-    var topic = $(link).text()
+    var topic = $(link).text().trim()
     console.log('adding... ' + topic + ' : ' + href)
     topicLinks.push(href)
     topics.push(topic)
   })
 
-  topicLinks.forEach(function(url) {
-    processTopic(url)
-  })
-//  processTopic(topicLinks[0]);
+  // var cnt = 0;
+  // topicLinks.forEach(function(url) {
+  //   var isLast = (cnt === topics.length-1)
+  //   processTopic(url, topics[cnt], isLast)
+  //   cnt++;
+  // })
+
+  // processTopic(topicLinks[0], topics[0], true)
+
+  for (let i = 0; i < topicLinks.length; i++) {
+    processTopic(topicLinks[i], topics[i])
+  }
 }
 
 var createFolder = function(path) {
@@ -131,6 +201,7 @@ ensureFolderExists('audio');
 var bookIndexUrl = bookPathUrl + 'ENLT002.HTM';
 request(bookIndexUrl, getIndex)
 
+setTimeout(outputDatabase, 5000) // Give it enough time (another timing hack)
 
 // fs.readFile('./ENLT002.HTM', function (err, data) {
 //   if (err) throw err
