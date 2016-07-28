@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "cheerio": "^0.20.0",
+    "hogan.js": "^3.0.2",
     "json-beautify": "^1.0.1",
     "picture-tube": "^1.0.0",
     "request": "^2.74.0"
