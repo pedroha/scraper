@@ -1,38 +1,45 @@
-var hogan = require("hogan.js");
-var lithuanian = require('./lithuanian-uncompressed.json')
+let hogan = require("hogan.js");
+let lithuanian = require('./res/lithuanian-uncompressed.json')
+let makeFolder = require('./utils/make-folder')
+let writeFile = require('./utils/write-file')
+
 //console.log(JSON.stringify(lithuanian))
 
-var audioBaseUrl = 'audio';
+let PROJECT_NAME = 'labas';
+let audioBaseUrl = 'audio';
 
 // Convert Lithuanian to what we need with simple transforms
-var cnt = 0;
 lithuanian.map(function(topic) {
 	topic.words.map(function(entry) {
-		entry.id = 'audio-' + cnt;
 		entry.audio = audioBaseUrl + '/' + entry.audio;
-		cnt++;
 	});
 });
 
-// lithuanian = lithuanian.splice(0, 3)
-// console.log(JSON.stringify(lithuanian))
+lithuanian = lithuanian.splice(0, 3)
 
-var pageTemplate = `
+// console.log(JSON.stringify(lithuanian))
+let templates = {};
+
+templates['page'] = 
+`
 <!DOCTYPE html>
 <html>
 <head>
 	<title>Labas!</title>
+	<link rel="stylesheet" type="text/css" href="${PROJECT_NAME}.css">
 </head>
 <body>
 {{{body}}}
+	<script src="jquery.js"></script>
+	<script src="${PROJECT_NAME}.js"></script>
 </body>
 </html>
 `;
 
-var sectionTemplate = 
+templates['topic'] = 
 `
 	<h3>{{topic}}</h3>
-	<ul>
+	<ul class="topic-list">
 	{{#words}}
 		{{>entry}}
 	{{/words}}
@@ -40,22 +47,32 @@ var sectionTemplate =
 	<hr/>
 `;
 
-var entryTemplate = 
+templates['entry'] = 
 `<li>
 	<div>{{english}}</div>
 	<div>{{lithuanian}}</div>
-	<audio id="{{id}}">
+	<audio>
 		<source src="{{audio}}" type="audio/mpeg" />
 	</audio>
 </li>
 `;
 
-var topicTpl = hogan.compile(sectionTemplate);
-var topics = lithuanian.map(function(topic) {
-	return topicTpl.render(topic, {entry: entryTemplate})
-})
+var buildWebPage = function() {
+	let topicTpl = hogan.compile(templates['topic']);
+	let topics = lithuanian.map(function(topic) {
+		return topicTpl.render(topic, {entry: templates['entry']})
+	})
 
-var pageTpl = hogan.compile(pageTemplate);
-var rendered = pageTpl.render({body: topics.join('')})
-console.log(rendered)
+	let pageTpl = hogan.compile(templates['page']);
+	let rendered = pageTpl.render({
+		head: {}, // meta stuff, like 'title' and so on
+		body: topics.join('')
+	}).trim()
+	//console.log(rendered)
 
+	makeFolder('web', function() {
+		writeFile(`web/${PROJECT_NAME}.html`, rendered)
+	})
+}
+
+buildWebPage()

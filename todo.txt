@@ -26,3 +26,14 @@ Easier for having all in the page (and perhaps as a JS object?)
 
 ----
 
+Issues: this will try to load all <audio> files (too many, like 1400 files!)
+Load the audio source on demand!
+
+Still slow, DOM parsing tie
+
+<audio id="audio-1">
+	<source src="audio/0002.mp3" type="audio/mpeg" />
+</audio>
+
+<audio id="audio-0002">
+</audio>
