@@ -8,6 +8,9 @@ var request = require('request')
 var $ = require('cheerio')
 var beautify = require("json-beautify");
 
+var outputHint = false;
+var compressed = true;
+
 var downloadFile = function(url, path) {
     console.log('downloading... ' + url)
 
@@ -69,59 +72,79 @@ var outputDatabase = function() {
   });
 
   // var json = JSON.stringify(sorted);
-  var json = beautify(sorted, null, 2, 80)
+  var json = beautify(sorted, null, 2, 120)
   console.log(json)
   fs.writeFileSync(databaseFilename, json);
+}
+
+var parseTopicPage = function(html, topic) {
+  console.log('getTopicPage: ' + topic)
+
+  let parsedHTML = $.load(html)
+  let words = []
+
+  let sel = 'audio > source'
+  parsedHTML(sel).each(function(i, audio) {
+    let $audio = $(audio)
+    let src = $audio.attr('src')
+    console.log('adding... ' + src)
+    // downloadAudioResource(src, 'audio')
+
+    let columns = $audio.parent().parent().siblings();
+    let english = $(columns[0]).text().trim();
+    let lithuanianNodes = $($(columns[1]).children()[0]).children();
+    let lithuanian = '';
+    let hint = '';
+
+    if (lithuanianNodes && lithuanianNodes.length > 1) {
+      hint = $(lithuanianNodes[0]).text().trim();
+      lithuanian = $(lithuanianNodes[1]).text().trim();
+    } else {
+      lithuanian = $(columns[0]).text().trim();
+
+      // Hack for the English translation, on the other side of the table!
+      let $tableRow = $(columns[0]).closest('tr')
+      let index = $tableRow.index()
+      let $firstInRow = $($tableRow.closest('div.row').children()[0])
+      let spans = $firstInRow.find('span')
+      english = $(spans[index]).text().trim()
+    }
+
+    let entry
+
+    if (compressed) {
+      entry = {
+        e: english,
+        l: lithuanian,
+        a: getFileName(src)
+      }
+    }
+    else {
+      entry = {
+        english,
+        lithuanian,
+        audio: getFileName(src)
+      }
+    }
+
+    if (outputHint) {
+      entry.hint = hint;
+    }
+    console.log(english, lithuanian, src)
+
+    words.push(entry)
+  })
+  database.push({
+    topic,
+    words
+  })
 }
 
 var getTopicPage = function(topic) {
   return function(err, resp, html) {
     if (err) return console.error(err)
-    let parsedHTML = $.load(html)
 
-    console.log('getTopicPage: ' + topic)
-
-    let words = []
-
-    let sel = 'audio > source'
-    parsedHTML(sel).each(function(i, audio) {
-      var entry;
-      let $audio = $(audio)
-      let src = $audio.attr('src')
-      console.log('adding... ' + src)
-      // downloadAudioResource(src, 'audio')
-
-      let columns = $audio.parent().parent().siblings();
-      let english = $(columns[0]).text().trim();
-      let lithuanianNodes = $($(columns[1]).children()[0]).children();
-
-      if (lithuanianNodes && lithuanianNodes.length > 1) {
-        let hint = $(lithuanianNodes[0]).text().trim();
-        let lithuanian = $(lithuanianNodes[1]).text().trim();
-
-        entry = {
-          english,
-          lithuanian,
-          hint,
-          audio: getFileName(src)
-        }
-        console.log(english, lithuanian, src)
-      } else {
-        // TODO: get English translation (from the table coming before!)
-        // More cheerio traversing!
-        let lithuanian = english // hack
-        entry = {
-          lithuanian,
-          audio: getFileName(src)
-        }        
-        console.log(lithuanian, src)
-      }
-      words.push(entry)
-    })
-    database.push({
-      topic,
-      words
-    })
+    parseTopicPage(html, topic)
   };
 }
 
@@ -196,20 +219,25 @@ var ensureFolderExists = function(path) {
   })  
 }
 
-ensureFolderExists('audio');
+var main = true;
 
-var bookIndexUrl = bookPathUrl + 'ENLT002.HTM';
-request(bookIndexUrl, getIndex)
+if (typeof main !== 'undefined') {
+  ensureFolderExists('audio');
 
-setTimeout(outputDatabase, 5000) // Give it enough time (another timing hack)
+  var bookIndexUrl = bookPathUrl + 'ENLT002.HTM';
+  request(bookIndexUrl, getIndex)
+
+  setTimeout(outputDatabase, 5000) // Give it enough time (another timing hack)  
+}
+
 
 // fs.readFile('./ENLT002.HTM', function (err, data) {
 //   if (err) throw err
 //   console.log(data)
-
 //   getIndex(null, null, data)
 // });
 
 // For testing topic page
+
 // var html = fs.readFileSync('./ENLT003.HTM', 'utf8')
-// getTopicPage(null, null, html)
+// parseTopicPage(html, '1 Family')

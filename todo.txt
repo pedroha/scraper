@@ -10,7 +10,9 @@ Done
 
 3) Output database in pretty json (sorted database!)
 
+4) Compressed json version, prettier json (longer lines)
+   Hacked for english translation for first row
 
 TODO
-4) Translate the topic words with audio but no English
+5) Front-end HTML page
 
