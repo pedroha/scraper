@@ -16,3 +16,13 @@ Done
 TODO
 5) Front-end HTML page
 
+Decision
+
+Either, create a full HTML with all the nodes as DOM in HTML
+Or pass JSON to create on the fly?
+
+Easier for having all in the page (and perhaps as a JS object?)
+-> Can play right away!
+
+----
+
