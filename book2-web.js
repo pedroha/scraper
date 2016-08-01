@@ -26,6 +26,7 @@ templates['page'] =
 <html>
 <head>
 	<title>Labas!</title>
+	<link href='https://fonts.googleapis.com/css?family=Goudy+Bookletter+1911' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" href="${PROJECT_NAME}.css">
 </head>
 <body>
@@ -39,7 +40,7 @@ templates['page'] =
 templates['topic'] = 
 `
 	<h3>{{topic}}</h3>
-	<ul class="topic-list">
+	<ul class="entry-list">
 	{{#words}}
 		{{>entry}}
 	{{/words}}
@@ -62,7 +63,6 @@ var buildWebPage = function() {
 	let topics = lithuanian.map(function(topic) {
 		return topicTpl.render(topic, {entry: templates['entry']})
 	})
-
 	let pageTpl = hogan.compile(templates['page']);
 	let rendered = pageTpl.render({
 		head: {}, // meta stuff, like 'title' and so on
