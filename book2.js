@@ -3,13 +3,16 @@
 // Probably a good one!
 // https://www.digitalocean.com/community/tutorials/how-to-use-node-js-request-and-cheerio-to-set-up-simple-web-scraping
 
-var fs = require('fs')
-var request = require('request')
-var $ = require('cheerio')
-var beautify = require("json-beautify");
+const fs = require('fs')
+const request = require('request')
+const $ = require('cheerio')
+const mkdirp = require('node-mkdirp')
+const beautify = require("json-beautify");
 
-var outputHint = false;
-var compressed = true;
+const downloadAudioFolder = 'web/audio'
+const downloadAudio = true;
+const outputHint = false;
+const compressed = true;
 
 var downloadFile = function(url, path) {
     console.log('downloading... ' + url)
@@ -46,7 +49,7 @@ var downloadAudioResource = function(url, folder) {
         else {
           // Sometimes, we get: { [Error: socket hang up] code: 'ECONNRESET' }
           var stats = fs.statSync(path)
-          if (stats["size"] === 0) { // Retry download
+          if (stats["size"] < 10) { // Retry download
             console.log('File size is 0: ' + name)
             downloadFile(url, path)
           }
@@ -77,6 +80,52 @@ var outputDatabase = function() {
   fs.writeFileSync(databaseFilename, json);
 }
 
+var collectEntry = function(src, $audio) {
+  let columns = $audio.parent().parent().siblings();
+  let english = $(columns[0]).text().trim();
+  let lithuanianNodes = $($(columns[1]).children()[0]).children();
+  let lithuanian = '';
+  let hint = '';
+
+  if (lithuanianNodes && lithuanianNodes.length > 1) {
+    hint = $(lithuanianNodes[0]).text().trim();
+    lithuanian = $(lithuanianNodes[1]).text().trim();
+  } else {
+    lithuanian = $(columns[0]).text().trim();
+
+    // Hack for the English translation, on the other side of the table!
+    let $tableRow = $(columns[0]).closest('tr')
+    let index = $tableRow.index()
+    let $firstInRow = $($tableRow.closest('div.row').children()[0])
+    let spans = $firstInRow.find('span')
+    english = $(spans[index]).text().trim()
+  }
+
+  let entry
+
+  if (compressed) {
+    entry = {
+      e: english,
+      l: lithuanian,
+      a: getFileName(src)
+    }
+  }
+  else {
+    entry = {
+      english,
+      lithuanian,
+      audio: getFileName(src)
+    }
+  }
+
+  if (outputHint) {
+    entry.hint = hint;
+  }
+  console.log(english, lithuanian, src)
+
+  return entry
+}
+
 var parseTopicPage = function(html, topic) {
   console.log('getTopicPage: ' + topic)
 
@@ -88,50 +137,11 @@ var parseTopicPage = function(html, topic) {
     let $audio = $(audio)
     let src = $audio.attr('src')
     console.log('adding... ' + src)
-    // downloadAudioResource(src, 'audio')
 
-    let columns = $audio.parent().parent().siblings();
-    let english = $(columns[0]).text().trim();
-    let lithuanianNodes = $($(columns[1]).children()[0]).children();
-    let lithuanian = '';
-    let hint = '';
-
-    if (lithuanianNodes && lithuanianNodes.length > 1) {
-      hint = $(lithuanianNodes[0]).text().trim();
-      lithuanian = $(lithuanianNodes[1]).text().trim();
-    } else {
-      lithuanian = $(columns[0]).text().trim();
-
-      // Hack for the English translation, on the other side of the table!
-      let $tableRow = $(columns[0]).closest('tr')
-      let index = $tableRow.index()
-      let $firstInRow = $($tableRow.closest('div.row').children()[0])
-      let spans = $firstInRow.find('span')
-      english = $(spans[index]).text().trim()
+    if (downloadAudio) {
+      downloadAudioResource(src, downloadAudioFolder)
     }
-
-    let entry
-
-    if (compressed) {
-      entry = {
-        e: english,
-        l: lithuanian,
-        a: getFileName(src)
-      }
-    }
-    else {
-      entry = {
-        english,
-        lithuanian,
-        audio: getFileName(src)
-      }
-    }
-
-    if (outputHint) {
-      entry.hint = hint;
-    }
-    console.log(english, lithuanian, src)
-
+    let entry = collectEntry(src, $audio)
     words.push(entry)
   })
   database.push({
@@ -207,22 +217,13 @@ var createFolder = function(path) {
   })
 }
 
-var ensureFolderExists = function(path) {
-  // Create /audio if it doesn't exist already
-  fs.readdir(path, function(err, files) {
-    if (err) {
-      createFolder(path)
-    }
-    files.forEach(function(file){
-      console.log( file );
-    });
-  })  
-}
-
 var main = true;
 
 if (typeof main !== 'undefined') {
-  ensureFolderExists('audio');
+  mkdirp(downloadAudioFolder, function(err) {
+    if (err) console.error(err)
+    else console.log('pow!')
+  })
 
   var bookIndexUrl = bookPathUrl + 'ENLT002.HTM';
   request(bookIndexUrl, getIndex)

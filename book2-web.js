@@ -62,7 +62,6 @@ var buildWebPage = function() {
 	let topics = lithuanian.map(function(topic) {
 		return topicTpl.render(topic, {entry: templates['entry']})
 	})
-
 	let pageTpl = hogan.compile(templates['page']);
 	let rendered = pageTpl.render({
 		head: {}, // meta stuff, like 'title' and so on
