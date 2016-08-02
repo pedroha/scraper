@@ -19,8 +19,14 @@ Done
 
 TODO
 a) Deploy to: labas.surge.sh
-b) Make it responsive (mobile friendly, mostly CSS, viewports)
+b) Add control panel: play, stop (display absolute / sticky!?)
+c) Clickable (and selectable to set currentItem)
 
+d) Make it responsive (mobile friendly, mostly CSS, viewports)
+e) Collect for all lanaguages in book2.de
+
+f) Coloring theme
+s
 ----
 
 Decision
@@ -46,3 +52,38 @@ Still slow, DOM parsing tie
 
 <audio id="audio-0002">
 </audio>
+
+----
+
+Reference
+
+Named Colors
+http://www.rapidtables.com/web/color/Gold_Color.htm
+
+Audio/Video Events
+http://html5doctor.com/html5-audio-the-state-of-play/
+https://html.spec.whatwg.org/multipage/embedded-content.html#mediaevents
+https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events
+
+----
+
+// Choose source language
+// http://www.goethe-verlag.com/book2/
+
+// Root for languages for American English
+// http://www.goethe-verlag.com/book2/EM/
+
+// Phrase book for Korean (from American English)
+// http://www.goethe-verlag.com/book2/EM/EMKO/EMKO002.HTM
+
+// Choose source and destination language!
+// American: 55 languages!
+
+// 56 Source languages in: http://www.goethe-verlag.com/book2/
+// $('#row-flags').find('a').length
+
+// to 55 destination languages in: http://www.goethe-verlag.com/book2/EM/
+// accordion-inner contains "Phrase book" or "숙어집"
+// => HTML is the universal language!
+// $('.accordion-inner').length
+

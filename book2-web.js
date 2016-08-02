@@ -46,7 +46,6 @@ templates['topic'] =
 		{{>entry}}
 	{{/words}}
 	</ul>
-	<hr/>
 `;
 
 templates['entry'] = 

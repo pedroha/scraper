@@ -1,22 +1,23 @@
-var LessonPlayer = function(audioNodeSelector) {
+var LessonPlayer = function(audioDomContainerSelector) {
 	'use strict';
 
 	var state = {
+		entries: [],
 		currentItem: 0,
-		playing: true
+		playing: false
 	};
 
-	var getEntries = function() {
-		// This can change as we add DOM nodes dynamically!
-		return $(audioNodeSelector).children();
+	var $getEntry = function(i) {
+		return $(state.entries[i]);
 	};
 
 	var goToNext = function() {
-		state.currentItem = (state.currentItem + 1) % getEntries().length; // Loop
+		// Loop
+		state.currentItem = (state.currentItem + 1) % state.entries.length; 
 	};
 
-	var endPlay = function() {
-		var pauseTime = 1000;
+	var endPlay = function(e) {
+		var pauseTime = e.target.duration * 1000 + 500;
 
 		setTimeout(function() {
 			if (state.playing) {
@@ -27,20 +28,18 @@ var LessonPlayer = function(audioNodeSelector) {
 	};
 
 	var scrollToTop = function(idx) {
-		var i = (idx === 0) ? 0 : idx-1;
+		var prevIdx = (idx === 0) ? 0 : idx-1; // scrollTop() to previous entry
 
 		$('html,body').animate({
-          scrollTop: $(getEntries()[i]).offset().top
+          scrollTop: $getEntry(prevIdx).offset().top
         }, 1000);
 	};
 
 	function playEntry() {
-		state.playing = true;
-
-		$(getEntries()).removeClass('active');
+		$(state.entries).removeClass('active');
 		scrollToTop(state.currentItem);
 
-		var $audio = $(getEntries()[state.currentItem]);
+		var $audio = $getEntry(state.currentItem);
 		var audio = $audio.addClass('active').find('audio')[0];
 
 		audio.addEventListener('ended', endPlay, false);
@@ -53,9 +52,38 @@ var LessonPlayer = function(audioNodeSelector) {
 
 	this.play = function() {
 		playEntry();
-	}
+	};
+
+	var self = this;
+
+	this.setEntries = function(entries) {
+		var $li = $(audioDomContainerSelector);
+		state.entries = $li;
+
+		// TODO: FIX BUG on offset
+		// 2nd topic list -> goes to first topic list always!
+		// Easier to add a custom data attribute: entry-#id
+
+		// $li.on('click', function() {
+		// 	state.currentItem = $(this).index();
+		// 	self.play();
+		// });
+	};
+
+	var setup = function() {
+		state.playing = true;
+
+		if (audioDomContainerSelector) {
+			self.setEntries(audioDomContainerSelector);
+		}
+		else {
+			throw new Error('LessonPlayer(audioDomContainerSelector): missing selector');
+		}
+	};
+
+	setup();
 };
 
-var lessonPlayer = new LessonPlayer('ul.entry-list');
+var lessonPlayer = new LessonPlayer('ul.entry-list > li');
 lessonPlayer.play();
 
