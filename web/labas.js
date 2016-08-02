@@ -1,22 +1,61 @@
-var currentItem = 0
+var LessonPlayer = function(audioNodeSelector) {
+	'use strict';
 
-var entries = $('ul.entry-list').children();
-var $entries = $(entries);
+	var state = {
+		currentItem: 0,
+		playing: true
+	};
 
-// Pick one item at a time and activate for few seconds
+	var getEntries = function() {
+		// This can change as we add DOM nodes dynamically!
+		return $(audioNodeSelector).children();
+	};
 
-for (let i = 0; i < entries.length; i++) {
-	setTimeout(function() {
-		$entries.removeClass('active');
-		var $currentEntry = $(entries[i])
-		if (i > 0) {
-			var $previousEntry = $(entries[i-1])
-			$('html,body').animate({
-	          scrollTop: $previousEntry.offset().top
-	        }, 1000);
-		}
-		$currentEntry.addClass('active').find('audio')[0].play();
-	}, 3000 * i)
-}
+	var goToNext = function() {
+		state.currentItem = (state.currentItem + 1) % getEntries().length; // Loop
+	};
 
+	var endPlay = function() {
+		var pauseTime = 1000;
+
+		setTimeout(function() {
+			if (state.playing) {
+				goToNext();
+				playEntry();
+			}
+		}, pauseTime);
+	};
+
+	var scrollToTop = function(idx) {
+		var i = (idx === 0) ? 0 : idx-1;
+
+		$('html,body').animate({
+          scrollTop: $(getEntries()[i]).offset().top
+        }, 1000);
+	};
+
+	function playEntry() {
+		state.playing = true;
+
+		$(getEntries()).removeClass('active');
+		scrollToTop(state.currentItem);
+
+		var $audio = $(getEntries()[state.currentItem]);
+		var audio = $audio.addClass('active').find('audio')[0];
+
+		audio.addEventListener('ended', endPlay, false);
+		audio.play();
+	};
+
+	this.stop = function() {
+		state.playing = false;
+	};
+
+	this.play = function() {
+		playEntry();
+	}
+};
+
+var lessonPlayer = new LessonPlayer('ul.entry-list');
+lessonPlayer.play();
 
