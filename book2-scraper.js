@@ -32,7 +32,7 @@ var getFileName = function(url) {
   if (idx > 0) {
     name = url.substring(idx+1)
   }
-  return name  
+  return name
 }
 
 var downloadAudioResource = function(url, folder) {
@@ -41,7 +41,7 @@ var downloadAudioResource = function(url, folder) {
     var isAudioFile = (name && name.substring(name.length-4) === '.mp3');
 
     if (isAudioFile) {
-      var path = folder + '/' + name; 
+      var path = folder + '/' + name;
       fs.access(path, fs.R_OK, (err) => {
         if (err) { // We don't have it yet, so let's get it!
           downloadFile(url, path)
@@ -228,7 +228,8 @@ if (typeof main !== 'undefined') {
   var bookIndexUrl = bookPathUrl + 'ENLT002.HTM';
   request(bookIndexUrl, getIndex)
 
-  setTimeout(outputDatabase, 5000) // Give it enough time (another timing hack)  
+  // Give it enough time (another timing hack)
+  setTimeout(outputDatabase, 5000)
 }
 
 
