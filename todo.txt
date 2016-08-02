@@ -13,8 +13,15 @@ Done
 4) Compressed json version, prettier json (longer lines)
    Hacked for english translation for first row
 
-TODO
 5) Front-end HTML page
+
+6) Playable interface, stoppable! + automatic scrollable
+
+TODO
+a) Deploy to: labas.surge.sh
+b) Make it responsive (mobile friendly, mostly CSS, viewports)
+
+----
 
 Decision
 
@@ -23,6 +30,8 @@ Or pass JSON to create on the fly?
 
 Easier for having all in the page (and perhaps as a JS object?)
 -> Can play right away!
+
+For prototyping: use 3 topics to loop through
 
 ----
 
