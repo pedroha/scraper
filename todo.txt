@@ -17,6 +17,7 @@ Done
 
 6) Playable interface, stoppable! + automatic scrollable
 
+
 TODO
 a) Deploy to: labas.surge.sh
 b) Add control panel: play, stop (display absolute / sticky!?)
@@ -26,7 +27,11 @@ d) Make it responsive (mobile friendly, mostly CSS, viewports)
 e) Collect for all lanaguages in book2.de
 
 f) Coloring theme
-s
+
+React version!
+g) Dynamic loading (server-side + client side: isomorphic -> ReactJS!)
+
+
 ----
 
 Decision
