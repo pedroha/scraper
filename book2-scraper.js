@@ -211,7 +211,7 @@ var getIndex = function(err, resp, html) {
 var createFolder = function(path) {
   fs.mkdir(path, function(err) {
     if (err) {
-      console.error(err);
+      console.error(err)
     }
     console.log("Directory created successfully!");
   })

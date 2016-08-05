@@ -1,34 +1,41 @@
 var LessonPlayer = function(audioDomContainerSelector) {
 	'use strict';
 
+	var clickable = 1;
+
 	var state = {
 		entries: [],
 		currentItem: 0,
 		playing: false
 	};
 
-	var $getEntry = function(i) {
-		return $(state.entries[i]);
-	};
-
-	var goToNext = function() {
-		// Loop
+	var goToNext = function() { // Loop
 		state.currentItem = (state.currentItem + 1) % state.entries.length; 
 	};
 
 	var endPlay = function(e) {
-		var pauseTime = e.target.duration * 1000 + 500;
+		var audio = e.target;
+		var speakerRepeatingTime = audio.duration * 1000 + 500;
+		var current = state.currentItem;
+
+		audio.removeEventListener('ended', endPlay); // let's clean up!
 
 		setTimeout(function() {
-			if (state.playing) {
+			// avoid race conditions: autoplay + clicking
+			if (state.playing && current === state.currentItem) {
 				goToNext();
 				playEntry();
 			}
-		}, pauseTime);
+		}, speakerRepeatingTime);
+	};
+
+	var $getEntry = function(i) {
+		return $(state.entries[i]);
 	};
 
 	var scrollToTop = function(idx) {
-		var prevIdx = (idx === 0) ? 0 : idx-1; // scrollTop() to previous entry
+		// scrollTop() to previous entry
+		var prevIdx = (idx === 0) ? 0 : idx-1; 
 
 		$('html,body').animate({
           scrollTop: $getEntry(prevIdx).offset().top
@@ -39,51 +46,57 @@ var LessonPlayer = function(audioDomContainerSelector) {
 		$(state.entries).removeClass('active');
 		scrollToTop(state.currentItem);
 
-		var $audio = $getEntry(state.currentItem);
-		var audio = $audio.addClass('active').find('audio')[0];
+		var $entry = $getEntry(state.currentItem);
+		var audio = $entry.addClass('active').find('audio')[0];
 
 		audio.addEventListener('ended', endPlay, false);
 		audio.play();
 	};
 
-	this.stop = function() {
-		state.playing = false;
-	};
-
-	this.play = function() {
+	var play = function() {
 		playEntry();
 	};
 
-	var self = this;
-
-	this.setEntries = function(entries) {
-		var $li = $(audioDomContainerSelector);
-		state.entries = $li;
-
-		// TODO: FIX BUG on offset
-		// 2nd topic list -> goes to first topic list always!
-		// Easier to add a custom data attribute: entry-#id
-
-		// $li.on('click', function() {
-		// 	state.currentItem = $(this).index();
-		// 	self.play();
-		// });
+	var stop = function() {
+		state.playing = false;
 	};
 
-	var setup = function() {
+	var setClickable = function($entry) {
+		$entry.each(function(i, item) {
+			$(this).on('click', function() {
+				state.currentItem = i;
+				play();
+			});
+		});
+	};
+
+	var setEntries = function(entriesBySelector) {
+		state.entries = $(entriesBySelector);
+		if (clickable) {
+			setClickable(state.entries);
+		}
+	};
+
+	var initialize = function() {
 		state.playing = true;
 
 		if (audioDomContainerSelector) {
-			self.setEntries(audioDomContainerSelector);
+			setEntries(audioDomContainerSelector);
 		}
 		else {
 			throw new Error('LessonPlayer(audioDomContainerSelector): missing selector');
 		}
 	};
 
-	setup();
+	initialize();
+
+	return {
+		play: play,
+		stop: stop,
+		setEntries: setEntries
+	};
 };
 
-var lessonPlayer = new LessonPlayer('ul.entry-list > li');
+var lessonPlayer = LessonPlayer('ul.entry-list > li');
 lessonPlayer.play();
 

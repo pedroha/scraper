@@ -19,6 +19,7 @@ lithuanian = lithuanian.splice(0, 3)
 
 // console.log(JSON.stringify(lithuanian))
 let templates = {};
+// <link href='https://fonts.googleapis.com/css?family=Goudy+Bookletter+1911' rel='stylesheet' type='text/css'>
 
 templates['page'] = 
 `
@@ -27,7 +28,6 @@ templates['page'] =
 <head>
 	<title>Labas!</title>
 	<meta charset="utf-8" /> 
-	<link href='https://fonts.googleapis.com/css?family=Goudy+Bookletter+1911' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" href="${PROJECT_NAME}.css">
 </head>
 <body>
@@ -59,7 +59,7 @@ templates['entry'] =
 `;
 
 var buildWebPage = function() {
-	let topicTpl = hogan.compile(templates['topic']);
+	let topicTpl = hogan.compile(templates['topic'])
 	let topics = lithuanian.map(function(topic) {
 		return topicTpl.render(topic, {entry: templates['entry']})
 	})

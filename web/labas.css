@@ -7,7 +7,7 @@ html, body, div {
 
 /* font settings */
 body {
-	font-family: 'Goudy Bookletter 1911', serif;
+	/*font-family: 'Goudy Bookletter 1911', serif;*/
 	font-size: 36px;
 	background-color: beige;
 }
