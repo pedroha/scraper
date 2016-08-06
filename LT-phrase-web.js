@@ -1,5 +1,5 @@
+let lithuanian = require('./res/lithuanian-uncompressed.json')
 const hogan = require("hogan.js");
-const lithuanian = require('./res/lithuanian-uncompressed.json')
 const makeFolder = require('./utils/make-folder')
 const writeFile = require('./utils/write-file')
 
@@ -15,7 +15,7 @@ lithuanian.map(function(topic) {
 	});
 });
 
-lithuanian = lithuanian.splice(0, 3)
+lithuanian = lithuanian.splice(0, 5)
 
 // console.log(JSON.stringify(lithuanian))
 let templates = {};
