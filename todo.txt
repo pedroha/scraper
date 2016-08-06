@@ -16,6 +16,13 @@ You must attribute the work to Goethe-Verlag and www.50languages.com
 
 
 TODO
+-----
+
+a) Vocabulary for Lithuanian (scraping + images + audio)
+b) Support (design) for mobile: audiosprites!
+
+-----
+
 a) Add control panel: play, stop (display absolute / sticky!?)
 b) Clickable (and selectable to set currentItem)
 c) Collect for all lanaguages in book2.de
@@ -80,6 +87,11 @@ http://html5doctor.com/html5-audio-the-state-of-play/
 https://html.spec.whatwg.org/multipage/embedded-content.html#mediaevents
 https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events
 
+Web Scraping
+FAVORITE!!! http://maxogden.com/scraping-with-node.html
+https://www.digitalocean.com/community/tutorials/how-to-use-node-js-request-and-cheerio-to-set-up-simple-web-scraping
+
+
 ----
 
 // Choose source language
@@ -101,4 +113,5 @@ https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events
 // accordion-inner contains "Phrase book" or "숙어집"
 // => HTML is the universal language!
 // $('.accordion-inner').length
+
 

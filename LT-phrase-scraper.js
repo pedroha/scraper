@@ -1,8 +1,3 @@
-// FAVORITE!!! http://maxogden.com/scraping-with-node.html
-
-// Probably a good one!
-// https://www.digitalocean.com/community/tutorials/how-to-use-node-js-request-and-cheerio-to-set-up-simple-web-scraping
-
 const fs = require('fs')
 const request = require('request')
 const $ = require('cheerio')

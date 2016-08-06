@@ -9,8 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "audiosprite": "^0.6.0",
     "cheerio": "^0.20.0",
     "hogan.js": "^3.0.2",
+    "howler": "^2.0.0",
     "json-beautify": "^1.0.1",
     "node-mkdirp": "0.0.1",
     "request": "^2.74.0"
