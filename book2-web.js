@@ -27,10 +27,12 @@ templates['page'] =
 <html>
 <head>
 	<title>Labas!</title>
-	<meta charset="utf-8" /> 
+	<meta charset="utf-8" />
+	<meta name="description" content="Goethe-Verlag and www.50languages.com">
 	<link rel="stylesheet" type="text/css" href="${PROJECT_NAME}.css">
 </head>
 <body>
+<!-- This work is attributed to: Goethe-Verlag and www.50languages.com -->
 {{{body}}}
 	<script src="jquery.js"></script>
 	<script src="${PROJECT_NAME}.js"></script>
