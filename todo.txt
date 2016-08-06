@@ -32,6 +32,15 @@ React version!
 g) Dynamic loading (server-side + client side: isomorphic -> ReactJS!)
 
 
+First deployment
+-> Takes too long for iterative deployment since /web/audio is uploaded *every* time
+-> Need to split audio files in a different subdomain (all at once?)
+
+http://book2.surge.sh/audio/LT/0001.mp3
+http://book2.surge.sh/audio/LT/0001.mp3
+
+
+
 ----
 
 Decision
