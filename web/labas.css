@@ -7,18 +7,25 @@ html, body, div, ul {
 
 /* font settings */
 body {
-	font-size: 36px;
+	font-size: 48px;
 	background-color: beige;
 }
 
+h1, h2, h3 {
+	padding: 0 0.8em;
+	font-family: "HelveticaNeueBlack", "HelveticaNeue-Black", "Helvetica Neue Black", "HelveticaNeue", "Helvetica Neue", 'TeXGyreHerosBold', "Arial Black", sans-serif; font-weight:800; font-stretch:normal;
+	/*font-family: 'Helvetica Neue';*/
+}
+
 ul.entry-list {
+	display: none;
 	list-style: none;
 	background-color: beige;
 }
 
 ul.entry-list li {
 	background-color: teal;
-	padding: 0.2em;
+	padding: 0.2em 0.4em;
 	transition: 0.2s;
 }
 
@@ -40,5 +47,5 @@ ul.entry-list li > div {
 	margin: 0.1em;
 	border-radius: 0.5em;
 	display: inline-block;
-	width: 300px;
+	width: 400px;
 }

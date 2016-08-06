@@ -1,3 +1,5 @@
+'use strict'
+
 let fs = require('fs')
 
 let createFolder = function(path) {

@@ -1,7 +1,9 @@
-let lithuanian = require('./res/lithuanian-uncompressed.json')
+'use strict';
+
 const hogan = require("hogan.js");
 const makeFolder = require('./utils/make-folder')
 const writeFile = require('./utils/write-file')
+let lithuanian = require('./res/lithuanian-uncompressed.json')
 
 //console.log(JSON.stringify(lithuanian))
 
@@ -26,37 +28,42 @@ templates['page'] =
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Labas!</title>
-	<meta charset="utf-8" />
-	<meta name="description" content="Goethe-Verlag and www.50languages.com">
-	<link rel="stylesheet" type="text/css" href="${PROJECT_NAME}.css">
+  <title>Labas!</title>
+  <meta charset="utf-8" />
+  <meta name="description" content="Goethe-Verlag and www.50languages.com">
+  <link rel="stylesheet" type="text/css" href="${PROJECT_NAME}.css">
 </head>
 <body>
 <!-- This work is attributed to: Goethe-Verlag and www.50languages.com -->
-{{{body}}}
-	<script src="jquery.js"></script>
-	<script src="${PROJECT_NAME}.js"></script>
+  <h2>Lithuanian Phrases</h2>
+  <ul class='phrases'>
+  {{{ phrases }}}
+  </ul>
+  <script src="jquery.js"></script>
+  <script src="${PROJECT_NAME}.js"></script>
 </body>
 </html>
 `;
 
 templates['topic'] = 
 `
-	<h3>{{topic}}</h3>
-	<ul class="entry-list">
-	{{#words}}
-		{{>entry}}
-	{{/words}}
-	</ul>
+  <li>
+    <h3>{{topic}}</h3>
+    <ul class="entry-list">
+    {{#words}}
+      {{>entry}}
+    {{/words}}
+    </ul>
+  </li>
 `;
 
 templates['entry'] = 
 `<li>
-	<div>{{english}}</div>
-	<div>{{lithuanian}}</div>
-	<audio>
-		<source src="{{audio}}" type="audio/mpeg" />
-	</audio>
+  <div>{{english}}</div>
+  <div>{{lithuanian}}</div>
+  <audio>
+    <source src="{{audio}}" type="audio/mpeg" />
+  </audio>
 </li>
 `;
 
@@ -68,7 +75,7 @@ let buildWebPage = function() {
 	let pageTpl = hogan.compile(templates['page']);
 	let rendered = pageTpl.render({
 		head: {}, // meta stuff, like 'title' and so on
-		body: topics.join('')
+		phrases: topics.join('')
 	}).trim()
 	//console.log(rendered)
 
