@@ -1,12 +1,12 @@
-let hogan = require("hogan.js");
-let lithuanian = require('./res/lithuanian-uncompressed.json')
-let makeFolder = require('./utils/make-folder')
-let writeFile = require('./utils/write-file')
+const hogan = require("hogan.js");
+const lithuanian = require('./res/lithuanian-uncompressed.json')
+const makeFolder = require('./utils/make-folder')
+const writeFile = require('./utils/write-file')
 
 //console.log(JSON.stringify(lithuanian))
 
-let PROJECT_NAME = 'labas';
-let audioBaseUrl = 'audio';
+const PROJECT_NAME = 'labas';
+const audioBaseUrl = 'audio';
 
 // Convert Lithuanian to what we need with simple transforms
 lithuanian.map(function(topic) {
@@ -60,7 +60,7 @@ templates['entry'] =
 </li>
 `;
 
-var buildWebPage = function() {
+let buildWebPage = function() {
 	let topicTpl = hogan.compile(templates['topic'])
 	let topics = lithuanian.map(function(topic) {
 		return topicTpl.render(topic, {entry: templates['entry']})
