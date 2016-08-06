@@ -2,34 +2,28 @@ Done
 0) Getting the index page and a topic page
 1) Getting selectors with cheerio to get Lithuanian's word and hint
 2) Gather all audio resources
-	When trying to download all the audio resources:
-	Many requests get: { [Error: socket hang up] code: 'ECONNRESET' }
-
-	? --> Need to slow down the simultaneous requests (or queue up up to 6 concurrent ones or so)
-	Answer: run multiple times but only make extra requests for those that failed
-
 3) Output database in pretty json (sorted database!)
-
 4) Compressed json version, prettier json (longer lines)
    Hacked for english translation for first row
-
 5) Front-end HTML page
-
 6) Playable interface, stoppable! + automatic scrollable
+7) Clickable
+8) Deployed to labas.surge.sh
+9) Mobile friendly
+10) Retrieved all languages (through flags)
+11) Attribution to
+You must attribute the work to Goethe-Verlag and www.50languages.com
 
 
 TODO
-a) Deploy to: labas.surge.sh
-b) Add control panel: play, stop (display absolute / sticky!?)
-c) Clickable (and selectable to set currentItem)
+a) Add control panel: play, stop (display absolute / sticky!?)
+b) Clickable (and selectable to set currentItem)
+c) Collect for all lanaguages in book2.de
 
-d) Make it responsive (mobile friendly, mostly CSS, viewports)
-e) Collect for all lanaguages in book2.de
+d) Coloring theme
 
-f) Coloring theme
-
-React version!
-g) Dynamic loading (server-side + client side: isomorphic -> ReactJS!)
+React version!?
+e) Dynamic loading (server-side + client side: isomorphic -> ReactJS!)
 
 
 First deployment
@@ -40,6 +34,13 @@ http://book2.surge.sh/audio/LT/0001.mp3
 http://book2.surge.sh/audio/LT/0001.mp3
 
 
+Split into 3 projects?
+a) Utility library to support each of these projects
+b) Audio project (to retrieve all audios into multiple folders) -> upload own subdomain
+c) Multi-language: Web project (to upload for each language)
+
+
+We can download all the AUDIO files in one big ZIP file!
 
 ----
 
