@@ -35,11 +35,26 @@ var LessonPlayer = function(audioDomContainerSelector) {
 
     var scrollToTop = function(idx) {
         // scrollTop() to previous entry
-        var prevIdx = (idx === 0) ? 0 : idx-1; 
+        var prevIdx = (idx === 0) ? 0 : idx-1;
+        var $previous = $getEntry(prevIdx);
 
-        $('html,body').animate({
-          scrollTop: $getEntry(prevIdx).offset().top
-        }, 1000);
+        if ($previous.is(':visible')) {
+            $('html,body').animate({
+              scrollTop: $previous.offset().top
+            }, 1000);            
+        }
+    };
+
+    var getCurrentAudio = function() {
+        var $entry = $getEntry(state.currentItem);
+        return $entry.find('audio')[0];
+    };
+
+    var makeEntryListVisible = function($entry) {
+        var $entryList = $entry.parent('.entry-list');
+        if (!$entryList.is(':visible')) {
+            $entryList.slideDown();
+        }
     };
 
     function playEntry() {
@@ -47,8 +62,10 @@ var LessonPlayer = function(audioDomContainerSelector) {
         scrollToTop(state.currentItem);
 
         var $entry = $getEntry(state.currentItem);
-        var audio = $entry.addClass('active').find('audio')[0];
+        makeEntryListVisible($entry);
+        $entry.addClass('active');
 
+        var audio = getCurrentAudio();
         audio.addEventListener('ended', endPlay, false);
         audio.play();
     };
@@ -58,6 +75,9 @@ var LessonPlayer = function(audioDomContainerSelector) {
     };
 
     var stop = function() {
+        var audio = getCurrentAudio();
+        audio.removeEventListener('ended', endPlay); // let's clean up!
+
         state.playing = false;
     };
 
@@ -88,15 +108,29 @@ var LessonPlayer = function(audioDomContainerSelector) {
         }
     };
 
+    var setAutoplay = function(val) {
+        state.playing = val;
+    };
+
     initialize();
 
     return {
         play: play,
         stop: stop,
+        setAutoplay: setAutoplay,
         setEntries: setEntries
     };
 };
 
 var lessonPlayer = LessonPlayer('ul.entry-list > li');
-lessonPlayer.play();
+// lessonPlayer.play();
 
+$('.phrases h3').on('click', function() {
+    var $entryList = $(this).next('.entry-list');
+
+    if ($entryList.is(':visible')) {
+        $entryList.slideUp();
+    } else {
+        $entryList.slideDown();
+    }
+});
