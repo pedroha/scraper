@@ -1,3 +1,5 @@
+'use strict'
+
 const fs = require('fs')
 const request = require('request')
 const $ = require('cheerio')
@@ -5,9 +7,11 @@ const mkdirp = require('node-mkdirp')
 const beautify = require("json-beautify");
 
 const downloadAudioFolder = 'web/audio'
-const downloadAudio = true;
+const downloadAudio = false;
 const outputHint = false;
 const compressed = true;
+
+// Failed for chapter 58! http://www.goethe-verlag.com/book2/EM/EMLT/EMLT060.HTM
 
 var downloadFile = function(url, path) {
     console.log('downloading... ' + url)

@@ -1,3 +1,5 @@
+// UI player vs Audio player (different states but in sync!)
+
 var LessonPlayer = function(audioDomContainerSelector) {
     'use strict';
 
