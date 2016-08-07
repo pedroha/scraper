@@ -1,5 +1,11 @@
 // UI player vs Audio player (different states but in sync!)
 
+var scrollTop = function(offset) {
+    $('html,body').animate({
+      scrollTop: offset
+    }, 1000);
+};
+
 var LessonPlayer = function(audioDomContainerSelector) {
     'use strict';
 
@@ -7,28 +13,11 @@ var LessonPlayer = function(audioDomContainerSelector) {
 
     var state = {
         entries: [],
-        currentItem: 0,
-        playing: false
+        currentItem: 0
     };
 
     var goToNext = function() { // Loop
         state.currentItem = (state.currentItem + 1) % state.entries.length; 
-    };
-
-    var endPlay = function(e) {
-        var audio = e.target;
-        var speakerRepeatingTime = audio.duration * 1000 + 500;
-        var current = state.currentItem;
-
-        audio.removeEventListener('ended', endPlay); // let's clean up!
-
-        setTimeout(function() {
-            // avoid race conditions: autoplay + clicking
-            if (state.playing && current === state.currentItem) {
-                goToNext();
-                playEntry();
-            }
-        }, speakerRepeatingTime);
     };
 
     var $getEntry = function(i) {
@@ -41,9 +30,7 @@ var LessonPlayer = function(audioDomContainerSelector) {
         var $previous = $getEntry(prevIdx);
 
         if ($previous.is(':visible')) {
-            $('html,body').animate({
-              scrollTop: $previous.offset().top
-            }, 1000);            
+            scrollTop($previous.offset().top);
         }
     };
 
@@ -53,7 +40,7 @@ var LessonPlayer = function(audioDomContainerSelector) {
     };
 
     var makeEntryListVisible = function($entry) {
-        var $entryList = $entry.parent('.entry-list');
+        var $entryList = $entry.closest('ul');
         if (!$entryList.is(':visible')) {
             $entryList.slideDown();
         }
@@ -67,20 +54,12 @@ var LessonPlayer = function(audioDomContainerSelector) {
         makeEntryListVisible($entry);
         $entry.addClass('active');
 
-        var audio = getCurrentAudio();
-        audio.addEventListener('ended', endPlay, false);
-        audio.play();
+        var audioId = $entry.data('audio');
+        playSound(audioId);
     };
 
     var play = function() {
         playEntry();
-    };
-
-    var stop = function() {
-        var audio = getCurrentAudio();
-        audio.removeEventListener('ended', endPlay); // let's clean up!
-
-        state.playing = false;
     };
 
     var setClickable = function($entry) {
@@ -100,8 +79,6 @@ var LessonPlayer = function(audioDomContainerSelector) {
     };
 
     var initialize = function() {
-        state.playing = true;
-
         if (audioDomContainerSelector) {
             setEntries(audioDomContainerSelector);
         }
@@ -110,29 +87,40 @@ var LessonPlayer = function(audioDomContainerSelector) {
         }
     };
 
-    var setAutoplay = function(val) {
-        state.playing = val;
-    };
-
     initialize();
 
     return {
         play: play,
         stop: stop,
-        setAutoplay: setAutoplay,
+        goToNext: goToNext,
         setEntries: setEntries
     };
 };
 
-var lessonPlayer = LessonPlayer('ul.entry-list > li');
-// lessonPlayer.play();
+var chapterExpander = function() {
+    var chapter = $(this).parent('[data-chapter]').data('chapter');
+    loadChapterSounds(chapter);
 
-$('.phrases h3').on('click', function() {
-    var $entryList = $(this).next('.entry-list');
-
+    var $entryList = $(this).next('ul');
     if ($entryList.is(':visible')) {
         $entryList.slideUp();
-    } else {
-        $entryList.slideDown();
     }
-});
+    else {
+        $entryList.slideDown();
+
+        // Play and activate the first entry!
+        var firstEntry = $entryList.find('li')[0];
+        $(firstEntry).trigger('click'); 
+    }
+};
+
+$('.phrases h3').on('click', chapterExpander);
+
+function playNext() {
+    lessonPlayer.goToNext();
+    lessonPlayer.play();
+};
+
+scrollTop(0);
+var lessonPlayer = LessonPlayer('.phrases ul > li');
+//lessonPlayer.play();

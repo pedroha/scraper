@@ -216,7 +216,7 @@ var createFolder = function(path) {
   })
 }
 
-var main = true;
+var main = true
 
 if (typeof main !== 'undefined') {
   mkdirp(downloadAudioFolder, function(err) {
@@ -224,7 +224,7 @@ if (typeof main !== 'undefined') {
     else console.log('pow!')
   })
 
-  var bookIndexUrl = bookPathUrl + 'ENLT002.HTM';
+  var bookIndexUrl = bookPathUrl + 'ENLT002.HTM'
   request(bookIndexUrl, getIndex)
 
   // Give it enough time (another timing hack)
@@ -236,7 +236,7 @@ if (typeof main !== 'undefined') {
 //   if (err) throw err
 //   console.log(data)
 //   getIndex(null, null, data)
-// });
+// })
 
 // For testing topic page
 
