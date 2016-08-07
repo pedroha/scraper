@@ -4,12 +4,12 @@ const fs = require('fs')
 const request = require('request')
 const $ = require('cheerio')
 const mkdirp = require('node-mkdirp')
-const beautify = require("json-beautify");
+const beautify = require("json-beautify")
 
 const downloadAudioFolder = 'web/audio'
-const downloadAudio = false;
-const outputHint = false;
-const compressed = true;
+const downloadAudio = false
+const outputHint = false
+const compressed = true
 
 // Failed for chapter 58! http://www.goethe-verlag.com/book2/EM/EMLT/EMLT060.HTM
 
@@ -23,10 +23,10 @@ var downloadFile = function(url, path) {
         console.log(err)
       })
       .pipe(stream)
-};
+}
 
 var getFileName = function(url) {
-  var name = null;
+  var name = null
   var idx = url.lastIndexOf('/')
   if (idx > 0) {
     name = url.substring(idx+1)
@@ -37,7 +37,7 @@ var getFileName = function(url) {
 var downloadAudioResource = function(url, folder) {
   var name = getFileName(url)
   if (name) {
-    var isAudioFile = (name && name.substring(name.length-4) === '.mp3');
+    var isAudioFile = (name && name.substring(name.length-4) === '.mp3')
 
     if (isAudioFile) {
       var path = folder + '/' + name;
@@ -61,8 +61,8 @@ var downloadAudioResource = function(url, folder) {
   }
 }
 
-const bookPathUrl = 'http://www.goethe-verlag.com/book2/EN/ENLT/';
-const databaseFilename = 'lithuanian.json';
+const bookPathUrl = 'http://www.goethe-verlag.com/book2/EN/ENLT/'
+const databaseFilename = 'lithuanian.json'
 
 var database = []
 
@@ -71,26 +71,26 @@ var outputDatabase = function() {
     var a = parseInt(right.topic)
     var b = parseInt(left.topic)
     return a - b
-  });
+  })
 
-  // var json = JSON.stringify(sorted);
+  // var json = JSON.stringify(sorted)
   var json = beautify(sorted, null, 2, 120)
   console.log(json)
-  fs.writeFileSync(databaseFilename, json);
+  fs.writeFileSync(databaseFilename, json)
 }
 
 var collectEntry = function(src, $audio) {
-  let columns = $audio.parent().parent().siblings();
-  let english = $(columns[0]).text().trim();
-  let lithuanianNodes = $($(columns[1]).children()[0]).children();
-  let lithuanian = '';
-  let hint = '';
+  let columns = $audio.parent().parent().siblings()
+  let english = $(columns[0]).text().trim()
+  let lithuanianNodes = $($(columns[1]).children()[0]).children()
+  let lithuanian = ''
+  let hint = ''
 
   if (lithuanianNodes && lithuanianNodes.length > 1) {
-    hint = $(lithuanianNodes[0]).text().trim();
-    lithuanian = $(lithuanianNodes[1]).text().trim();
+    hint = $(lithuanianNodes[0]).text().trim()
+    lithuanian = $(lithuanianNodes[1]).text().trim()
   } else {
-    lithuanian = $(columns[0]).text().trim();
+    lithuanian = $(columns[0]).text().trim()
 
     // Hack for the English translation, on the other side of the table!
     let $tableRow = $(columns[0]).closest('tr')
@@ -161,15 +161,15 @@ var findTopic = function(topic) {
   for (let i = 0; i < database.length; i++) {
     var entry = database[i];
     if (entry.topic === topic) {
-      return true;
+      return true
     }
   }
-  return false;
+  return false
 }
 
 var processTopic = function(relativeUrl, topic) {
-  var url = bookPathUrl + relativeUrl;
-  console.log(url);
+  var url = bookPathUrl + relativeUrl
+  console.log(url)
 
   if (!findTopic(topic)) {
     request(url, getTopicPage(topic))
