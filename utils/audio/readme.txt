@@ -13,7 +13,7 @@ https://www.npmjs.com/package/sprity
 # Compress from: 945049 to 236478
 ffmpeg -i result.mp3 -ab 36k result.36k.mp3
 
-# webm: very highly compressed!! smallest file: 
+# webm: very highly compressed!! smallest file:
 ffmpeg -i 001-family.mp3 -ab 36k 001-family.36k.webm
 
 npm ffmpeg? Sure we can!
