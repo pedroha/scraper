@@ -12,23 +12,24 @@ const audioBaseUrl = 'audio'
 const htmlFilename = 'phrases.html'
 
 var convertAudios = function(language, convertToFullUrl) {
-    var convertAudio = function(transform) {
+
+    var transformAudioEntry = function(transform) {
         language.map(function(topic) {
             topic.words.map(transform)
         })
     }
 
-    if (convertToFullUrl) {
-        convertAudio(function(entry) {
-            entry.audio = audioBaseUrl + '/' + entry.audio
-        })
+    var fullAudioUrlTransform = function(entry) {
+        entry.audio = audioBaseUrl + '/' + entry.audio
     }
-    else {
-        convertAudio(function(entry) {
-            var idx = entry.audio.indexOf('.')
-            entry.audio = entry.audio.substr(0, idx)
-        })
+
+    var audioIdTransform = function(entry) {
+        var idx = entry.audio.indexOf('.')
+        entry.audio = entry.audio.substr(0, idx)
     }
+
+    var transform = convertToFullUrl? fullAudioUrlTransform : audioIdTransform
+    transformAudioEntry(transform)
 }
 
 let templates = {}

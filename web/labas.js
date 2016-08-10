@@ -6,6 +6,8 @@ var scrollTop = function(offset) {
     }, 1000);
 };
 
+var mediaPlayer = MediaPlayer();
+
 var LessonPlayer = function(audioDomContainerSelector) {
     'use strict';
 
@@ -55,7 +57,7 @@ var LessonPlayer = function(audioDomContainerSelector) {
         $entry.addClass('active');
 
         var audioId = $entry.data('audio');
-        playSound(audioId);
+        mediaPlayer.playSound(audioId);
     };
 
     var play = function() {
@@ -99,7 +101,7 @@ var LessonPlayer = function(audioDomContainerSelector) {
 
 var chapterExpander = function() {
     var chapter = $(this).parent('[data-chapter]').data('chapter');
-    loadChapterSounds(chapter);
+    mediaPlayer.loadChapterSounds(chapter);
 
     var $entryList = $(this).next('ul');
     if ($entryList.is(':visible')) {
