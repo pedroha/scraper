@@ -53,10 +53,10 @@ templates['page'] =
     </ul>
     <script src="jquery.js"></script>
     <script src="howler.min.js"></script>
-    <script src="${PROJECT_NAME}.js"></script>
     <script src="sounds-config.js"></script>
-    <script src="sounds.js"></script>
-    <script src="labas.js"></script>
+    <script src="media-player.js"></script>
+    <script src="lesson-player.js"></script>
+    <script src="${PROJECT_NAME}.js"></script>
 </body>
 </html>
 `
