@@ -1,17 +1,25 @@
-var MediaPlayer = function() {
-    var baseUrl = './audio/LT/';
+var MediaPlayer = function(baseUrl) {
     var howlers = {};
-    var autoplay = true; // setAutoplay(true/false) in MediaBankPlayer (multiple audio sprites, load/unload)
+    var autoplay = true; 
     var currentSoundId;
+    
+    var self = this;
+    self.playNext = null;
+
+    var getDuration = function(audioId) {
+        var chapter = getChapter(audioId);
+        var audioConfig = soundsConfig[chapter].settings.sprite[audioId];
+        return audioConfig[1];
+    };
 
     var soundEnded = function() {
-        if (currentSoundId) {
+        if (currentSoundId && self.playNext) {
             var duration = getDuration(currentSoundId);
 
             var endingSound = currentSoundId; // avoid race conditions
             setTimeout(function() {
                 if (autoplay && endingSound === currentSoundId) {
-                    playNext();
+                    self.playNext();
                 }
             }, duration);
         }
@@ -80,14 +88,10 @@ var MediaPlayer = function() {
         }
     };
 
-    var getDuration = function(audioId) {
-        var chapter = getChapter(audioId);
-        var audioConfig = soundsConfig[chapter].settings.sprite[audioId];
-        return audioConfig[1];
+    var setAutoplay = function(val) { // TODO: make it public
+    	autoplay = val;
     };
 
-    return {
-        playSound: playSound,
-        loadChapterSounds: loadChapterSounds
-    };
+    this.playSound = playSound;
+    this.loadChapterSounds = loadChapterSounds;
 };
