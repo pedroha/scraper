@@ -14,24 +14,27 @@ Done
 11) Attribution to
 You must attribute the work to Goethe-Verlag and www.50languages.com
 
+12) Weekend: audiosprites, ffmpeg, compression, howler.js
+13) Collapsible design, for mobile friendly
+14) Decoupled: LessonPlayer vs MediaPlayer
+15) Deployed to root: http://labas.surge.sh
+
 
 TODO
 -----
 
-a) Vocabulary for Lithuanian (scraping + images + audio)
-b) Support (design) for mobile: audiosprites!
-
------
-
 a) Add control panel: play, stop (display absolute / sticky!?)
-b) Clickable (and selectable to set currentItem)
-c) Collect for all lanaguages in book2.de
 
-d) Coloring theme
+b) Vocabulary for Lithuanian (scraping + images + audio)
+c) Clean up HTML markup: decouple audio mapping from the markup -> set up data-entry instead
+d) Customize css coloring themes
+e) Clickable (and selectable to set currentItem)
+f) Collect for all lanaguages in book2.de
 
 React version!?
-e) Dynamic loading (server-side + client side: isomorphic -> ReactJS!)
+g) Dynamic loading (server-side + client side: isomorphic -> ReactJS!)
 
+---------------------------------------------------------------------------
 
 First deployment
 -> Takes too long for iterative deployment since /web/audio is uploaded *every* time
