@@ -8,4 +8,8 @@ mediaPlayer.playNext = function() {
     lessonPlayer.play();
 };
 
-lessonPlayer.play();
+var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+if (!isMobile) {
+    lessonPlayer.play();
+}
