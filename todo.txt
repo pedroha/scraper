@@ -19,17 +19,18 @@ You must attribute the work to Goethe-Verlag and www.50languages.com
 14) Decoupled: LessonPlayer vs MediaPlayer
 15) Deployed to root: http://labas.surge.sh
 
+16) Configurable language scraper/web using config (added 'readable' for Ukranian)
 
 TODO
 -----
 
-a) Add control panel: play, stop (display absolute / sticky!?)
+a) Clean up HTML markup: decouple audio mapping from the markup -> set up data-entry instead
+   soundsConfig[language] + downloads
 
-b) Vocabulary for Lithuanian (scraping + images + audio)
-c) Clean up HTML markup: decouple audio mapping from the markup -> set up data-entry instead
+b) Add control panel: play, stop (display absolute / sticky!?)
+c) Vocabulary for Lithuanian (scraping + images + audio)
 d) Customize css coloring themes
-e) Clickable (and selectable to set currentItem)
-f) Collect for all lanaguages in book2.de
+e) Collect for all lanaguages in book2.de
 
 React version!?
 g) Dynamic loading (server-side + client side: isomorphic -> ReactJS!)
