@@ -4,28 +4,22 @@ const hogan = require("hogan.js");
 const makeFolder = require('./utils/make-folder')
 const writeFile = require('./utils/write-file')
 
-let config = require('./res/config-lt.json')
-let language = require(`./res/${config.language}.json`)
-// language = language.splice(0, 5)
-// console.log(JSON.stringify(language))
-
-const PROJECT_NAME = 'labas'
-const audioBaseUrl = 'audio'
-const htmlFilename = `${config.language}.html`
-
-
-var expandEntries = function() {
+var expandEntries = function(language) {
     language.map(function(topic) {
         topic.words.map(function expand(entry) {
             entry.audio = entry.a
             entry.language = entry.l
-            entry.readable = entry.r
+            if (entry.r) {
+                entry.readable = entry.r
+            }
             entry.translation = entry.t
         })
     })    
 }
 
 var convertAudios = function(language, convertToFullUrl) {
+    const audioBaseUrl = 'audio'
+
     var transformAudioEntry = function(transform) {
         language.map(function(topic) {
             topic.words.map(transform)
@@ -59,7 +53,7 @@ templates['page'] =
 </head>
 <body>
 <!-- Based on resources from: Goethe-Verlag and www.50languages.com -->
-    <h2>Phrases in {{language}}</h2>
+    <h2>Phrases in {{languageCapitalized}}</h2>
 
     <ul class='phrases'>
     {{{ phrases }}}
@@ -67,7 +61,7 @@ templates['page'] =
     <script src="jquery.js"></script>
     <script src="howler.min.js"></script>
     <script>
-        var language = '{{languageVar}}';
+        var language = '{{language}}';
     </script>
     <script src="sounds-config.js"></script>
     <script src="media-player.js"></script>
@@ -92,7 +86,12 @@ templates['topic'] =
 templates['entry'] = 
 `<li data-audio="{{audio}}">
     <dl>
-        <dt>{{language}} {{readable}}</dt>
+    {{#readable}}
+        <dt>{{language}} ## {{readable}}</dt>
+    {{/readable}}
+    {{^readable}}
+        <dt>{{language}}</dt>
+    {{/readable}}
         <dd>{{translation}}</dd>
     </dl>
 </li>
@@ -105,7 +104,7 @@ String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1)
 }
 
-let buildWebPage = function() {
+let buildWebPage = function(config, language) {
     let topicTpl = hogan.compile(templates['topic'])
     let i = 1
 
@@ -122,16 +121,22 @@ let buildWebPage = function() {
             content: 'Goethe-Verlag and www.50languages.com'
         }, // meta stuff, like 'title' and so on
         phrases: topics.join(''),
-        languageVar: config.language,
-        language: config.language.capitalize()
+        language: config.language,
+        languageCapitalized: config.language.capitalize()
     }).trim()
-    //console.log(rendered)
+    // console.log(rendered)
 
     makeFolder('web', function() {
+        const htmlFilename = `${config.language}.html`
         writeFile(`web/${htmlFilename}`, rendered)
     })
 }
 
-expandEntries()
+let config = require('./res/config-lt.json')
+let language = require(`./res/${config.language}.json`)
+// language = language.splice(0, 5)
+// console.log(JSON.stringify(language))
+
+expandEntries(language)
 convertAudios(language)
-buildWebPage()
+buildWebPage(config, language)
