@@ -1,4 +1,6 @@
-var soundsConfig = {
+var soundsConfig = {}
+
+soundsConfig['lithuanian'] = {
   "phrases-002": {
     "title": "2 Family Members",
     "settings": {

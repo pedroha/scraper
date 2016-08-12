@@ -1,14 +1,15 @@
-var MediaPlayer = function(baseUrl) {
+var MediaPlayer = function(baseUrl, language) {
     var howlers = {};
     var autoplay = true; 
     var currentSoundId;
+    var sounds = soundsConfig[language];
     
     var self = this;
     self.playNext = null;
 
     var getDuration = function(audioId) {
         var chapter = getChapter(audioId);
-        var audioConfig = soundsConfig[chapter].settings.sprite[audioId];
+        var audioConfig = sounds[chapter].settings.sprite[audioId];
         return audioConfig[1];
     };
 
@@ -27,7 +28,7 @@ var MediaPlayer = function(baseUrl) {
 
     var loadChapterSounds = function(chapter, onload) {
         if (!howlers[chapter]) {
-            var settings = soundsConfig[chapter].settings;
+            var settings = sounds[chapter].settings;
             settings.src = baseUrl + settings.src;
             settings.preload = false;
             settings.onload = onload;
@@ -43,8 +44,8 @@ var MediaPlayer = function(baseUrl) {
     };
 
     var getChapter = function(audioId) {
-        for (var chapter in soundsConfig) {
-            if (audioId in soundsConfig[chapter].settings.sprite) {
+        for (var chapter in sounds) {
+            if (audioId in sounds[chapter].settings.sprite) {
                 return chapter;
             }
         }
@@ -52,7 +53,7 @@ var MediaPlayer = function(baseUrl) {
 
     var stopSound = function(callback) {
         currentSoundId = null;
-        for (var chapter in soundsConfig) {
+        for (var chapter in sounds) {
             if (howlers[chapter]) {
                 howlers[chapter].stop()
                 // howlers[chapter].fade(1, 0, 500); // not quite working as expected
