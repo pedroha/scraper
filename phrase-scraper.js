@@ -6,12 +6,21 @@ const $ = require('cheerio')
 const mkdirp = require('node-mkdirp')
 const beautify = require("json-beautify")
 
+let config = require('./res/config-lt.json')
+console.log(config)
+
+// var str = `${config['code-src']}`
+// console.log(str)
+
+// str =`${config['code-src']}${config['code-dest']}002.HTM`
+// console.log(str)
+
+const indexPagePrefix = `${config['code-src']}${config['code-dest']}`
+
 const downloadAudioFolder = 'web/audio'
 const downloadAudio = false
 const outputHint = false
 const compressed = true
-
-// Failed for chapter 58! http://www.goethe-verlag.com/book2/EM/EMLT/EMLT060.HTM
 
 var downloadFile = function(url, path) {
     console.log('downloading... ' + url)
@@ -40,7 +49,8 @@ var downloadAudioResource = function(url, folder) {
     var isAudioFile = (name && name.substring(name.length-4) === '.mp3')
 
     if (isAudioFile) {
-      var path = folder + '/' + name;
+      var path = folder + '/' + name
+
       fs.access(path, fs.R_OK, (err) => {
         if (err) { // We don't have it yet, so let's get it!
           downloadFile(url, path)
@@ -61,8 +71,8 @@ var downloadAudioResource = function(url, folder) {
   }
 }
 
-const bookPathUrl = 'http://www.goethe-verlag.com/book2/EN/ENLT/'
-const databaseFilename = 'lithuanian.json'
+const bookPathUrl = `http://www.goethe-verlag.com/book2/EM/${indexPagePrefix}/`
+const databaseFilename = `${config.language}.json`
 
 var database = []
 
@@ -81,46 +91,75 @@ var outputDatabase = function() {
 
 var collectEntry = function(src, $audio) {
   let columns = $audio.parent().parent().siblings()
-  let english = $(columns[0]).text().trim()
-  let lithuanianNodes = $($(columns[1]).children()[0]).children()
-  let lithuanian = ''
+  let translation = $(columns[0]).text().trim()
+  let languageNodes = $($(columns[1]).children()[0]).children()
+  let language = ''
+  let readable = ''
   let hint = ''
 
-  if (lithuanianNodes && lithuanianNodes.length > 1) {
-    hint = $(lithuanianNodes[0]).text().trim()
-    lithuanian = $(lithuanianNodes[1]).text().trim()
-  } else {
-    lithuanian = $(columns[0]).text().trim()
+  if (languageNodes && languageNodes.length > 1) {
+    hint = $(languageNodes[0]).text().trim()
 
-    // Hack for the English translation, on the other side of the table!
+    language = $(languageNodes[1]).text().trim()
+
+    if (/\r\n\r\n/.test(language)) {
+      let pieces = language.split('\r\n\r\n')
+      language = pieces[0]
+      readable = pieces[1]
+    }
+  } 
+  else {
+    language = $(columns[0]).text().trim()
+
+    // Hack for the English language, on the other side of the table!
     let $tableRow = $(columns[0]).closest('tr')
     let index = $tableRow.index()
     let $firstInRow = $($tableRow.closest('div.row').children()[0])
     let spans = $firstInRow.find('span')
-    english = $(spans[index]).text().trim()
+    translation = $(spans[index]).text().trim()
   }
 
   let entry
 
   if (compressed) {
-    entry = {
-      e: english,
-      l: lithuanian,
-      a: getFileName(src)
+    if (readable) {
+      entry = {
+        t: translation,
+        l: language,
+        r: readable,
+        a: getFileName(src)
+      }
+    }
+    else {
+      entry = {
+        t: translation,
+        l: language,
+        a: getFileName(src)
+      }
     }
   }
   else {
-    entry = {
-      english,
-      lithuanian,
-      audio: getFileName(src)
+    if (readable) {
+      entry = {
+        translation,
+        language,
+        readable,
+        audio: getFileName(src)
+      }
+    }
+    else {
+      entry = {
+        translation,
+        language,
+        audio: getFileName(src)
+      }    
     }
   }
 
   if (outputHint) {
-    entry.hint = hint;
+    entry.hint = hint
   }
-  console.log(english, lithuanian, src)
+  console.log(translation, language, src)
 
   return entry
 }
@@ -154,12 +193,12 @@ var getTopicPage = function(topic) {
     if (err) return console.error(err)
 
     parseTopicPage(html, topic)
-  };
+  }
 }
 
 var findTopic = function(topic) {
   for (let i = 0; i < database.length; i++) {
-    var entry = database[i];
+    var entry = database[i]
     if (entry.topic === topic) {
       return true
     }
@@ -224,7 +263,7 @@ if (typeof main !== 'undefined') {
     else console.log('pow!')
   })
 
-  var bookIndexUrl = bookPathUrl + 'ENLT002.HTM'
+  var bookIndexUrl = bookPathUrl + indexPagePrefix + '002.HTM'
   request(bookIndexUrl, getIndex)
 
   // Give it enough time (another timing hack)
