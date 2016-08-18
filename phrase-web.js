@@ -1,8 +1,13 @@
 'use strict';
 
 const hogan = require("hogan.js");
-const makeFolder = require('./utils/make-folder')
+const mkdirp = require('node-mkdirp')
 const writeFile = require('./utils/write-file')
+const config = require('./config')
+
+let language = require(`./res/${config.language}.json`)
+// language = language.splice(0, 5)
+// console.log(JSON.stringify(language))
 
 var expandEntries = function(language) {
     language.map(function(topic) {
@@ -126,16 +131,13 @@ let buildWebPage = function(config, language) {
     }).trim()
     // console.log(rendered)
 
-    makeFolder('web', function() {
-        const htmlFilename = `${config.language}.html`
-        writeFile(`web/${htmlFilename}`, rendered)
+    mkdirp('web', function(err) {
+      if (err) console.error(err)
+      else console.log('pow!')
     })
+    const htmlFilename = `${config.language}.html`
+    writeFile(`web/${htmlFilename}`, rendered)
 }
-
-let config = require('./res/config-lt.json')
-let language = require(`./res/${config.language}.json`)
-// language = language.splice(0, 5)
-// console.log(JSON.stringify(language))
 
 expandEntries(language)
 convertAudios(language)

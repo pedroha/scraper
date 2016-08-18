@@ -17,8 +17,8 @@ request({
 }, function(error, response, body) {
   var cnt = 0;
   var $ = cheerio.load(body);
-  var selector = 'h1.article_title > a';
   // var selector = 'section.article_header > a'; // not matching!
+  var selector = 'h1.article_title > a';
 
   //$(".entry-title > a").each(function() {
   $(selector).each(function() {

@@ -4,10 +4,10 @@ const fs = require('fs')
 const request = require('request')
 const $ = require('cheerio')
 const mkdirp = require('node-mkdirp')
-const beautify = require("json-beautify")
+const beautify = require('json-beautify')
+const config = require('./config')
 
-let config = require('./res/config-lt.json')
-console.log(config)
+// console.log("scraper.config", config)
 
 // var str = `${config['code-src']}`
 // console.log(str)
@@ -15,12 +15,15 @@ console.log(config)
 // str =`${config['code-src']}${config['code-dest']}002.HTM`
 // console.log(str)
 
+const processFirstTopicOnly = false;
+
 const indexPagePrefix = `${config['code-src']}${config['code-dest']}`
 
 const downloadAudioFolder = 'web/audio'
 const downloadAudio = false
 const outputHint = false
 const compressed = true
+
 
 var downloadFile = function(url, path) {
     console.log('downloading... ' + url)
@@ -86,7 +89,7 @@ var outputDatabase = function() {
   // var json = JSON.stringify(sorted)
   var json = beautify(sorted, null, 2, 120)
   console.log(json)
-  fs.writeFileSync(databaseFilename, json)
+  fs.writeFileSync('res/' + databaseFilename, json)
 }
 
 var collectEntry = function(src, $audio) {
@@ -238,11 +241,13 @@ var getIndex = function(err, resp, html) {
   //   processTopic(url, topics[cnt], isLast)
   //   cnt++;
   // })
-
-  // processTopic(topicLinks[0], topics[0], true)
-
-  for (let i = 0; i < topicLinks.length; i++) {
-    processTopic(topicLinks[i], topics[i])
+  if (processFirstTopicOnly) {
+    processTopic(topicLinks[0], topics[0], true)
+  }
+  else {
+    for (let i = 0; i < topicLinks.length; i++) {
+      processTopic(topicLinks[i], topics[i])
+    }
   }
 }
 
@@ -271,7 +276,7 @@ if (typeof main !== 'undefined') {
 }
 
 
-// fs.readFile('./ENLT002.HTM', function (err, data) {
+// fs.readFile('./res/html/ENLT002.HTM', function (err, data) {
 //   if (err) throw err
 //   console.log(data)
 //   getIndex(null, null, data)
@@ -279,5 +284,5 @@ if (typeof main !== 'undefined') {
 
 // For testing topic page
 
-// var html = fs.readFileSync('./ENLT003.HTM', 'utf8')
+// var html = fs.readFileSync('./res/html/ENLT003.HTM', 'utf8')
 // parseTopicPage(html, '1 Family')
