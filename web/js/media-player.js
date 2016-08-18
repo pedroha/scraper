@@ -27,7 +27,7 @@ var MediaPlayer = function(baseUrl, language) {
     };
 
     var loadChapterSounds = function(chapter, onload) {
-        if (!howlers[chapter]) {
+        if (sounds && !howlers[chapter]) {
             var settings = sounds[chapter].settings;
             settings.src = baseUrl + settings.src;
             settings.preload = false;
