@@ -54,7 +54,7 @@ templates['page'] =
     <title>Labas!</title>
     <meta charset="utf-8" />
     <meta name="description" content="{{head.content}}">
-    <link rel="stylesheet" type="text/css" href="app.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
 </head>
 <body>
 <!-- Based on resources from: Goethe-Verlag and www.50languages.com -->
@@ -63,15 +63,15 @@ templates['page'] =
     <ul class='phrases'>
     {{{ phrases }}}
     </ul>
-    <script src="jquery.js"></script>
-    <script src="howler.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/howler.min.js"></script>
     <script>
         var language = '{{language}}';
     </script>
-    <script src="sounds-config.js"></script>
-    <script src="media-player.js"></script>
-    <script src="lesson-player.js"></script>
-    <script src="app.js"></script>
+    <script src="js/sounds-config.js"></script>
+    <script src="js/media-player.js"></script>
+    <script src="js/lesson-player.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
 `

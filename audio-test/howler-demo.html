@@ -1,0 +1,134 @@
+<script src="howler.js"></script>
+<script>
+  // "src": [
+  //   "001-family.36k.webm", // prioritize the smallish mobile-friendly ios version
+  //   "001-family.36k.m4a", // prioritize the smallish mobile-friendly ios version
+  //   "001-family.36k.mp3", // increase in quality (maybe determine order acc. to browser desktop/mobile)
+  //   "001-family.36k.ogg",
+  //   "001-family.36k.ac3"
+  // ],
+
+var settings = {
+  "src": [
+    "test.m4a",
+    "test.mp3"
+  ],
+  "sprite": {
+    "0001": [
+      0,
+      1385
+    ],
+    "0002": [
+      3000,
+      1072
+    ],
+    "0003": [
+      6000,
+      680
+    ],
+    "0004": [
+      8000,
+      1281
+    ],
+    "0005": [
+      11000,
+      1176
+    ],
+    "0006": [
+      14000,
+      967
+    ],
+    "0007": [
+      16000,
+      1777
+    ],
+    "0008": [
+      19000,
+      1176
+    ],
+    "0009": [
+      22000,
+      1072
+    ],
+    "0010": [
+      25000,
+      1281
+    ],
+    "0011": [
+      28000,
+      1072
+    ],
+    "0012": [
+      31000,
+      967
+    ],
+    "0013": [
+      33000,
+      1176
+    ],
+    "0014": [
+      36000,
+      1881
+    ],
+    "0015": [
+      39000,
+      1281
+    ],
+    "0016": [
+      42000,
+      1176
+    ],
+    "0017": [
+      45000,
+      3083
+    ],
+    "0018": [
+      50000,
+      1777
+    ],
+    "0019": [
+      53000,
+      1777
+    ],
+    "0020": [
+      56000,
+      1672
+    ]
+  }
+};
+
+settings.preload = false;
+
+settings.onend = function() {
+	console.log(arguments)
+
+	unload() // abruptly kill eveything!
+};
+
+settings.onloadederror = function() {
+	console.log('loaded error')
+};
+
+var sound = new Howl(settings);
+
+function unload() {
+	sound.unload()
+}
+
+// Clear listener after first call. 
+sound.once('load', function() {
+  // sound.play() // NOT WORKING, but kind of irrelevant API
+
+  // Working lovely in stereo mode!, our default mode anyway
+
+  sound.play("0011")
+  sound.play("0016")
+  sound.play("0020")
+
+  sound.play("0011")
+});
+
+sound.load()
+
+
+</script>
