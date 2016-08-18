@@ -2,7 +2,7 @@ const fs = require('fs')
 const $ = require('cheerio')
 const beautify = require("json-beautify")
 
-let html = fs.readFileSync('../web/flags.html')
+let html = fs.readFileSync('../res/html/flags.html')
 let parsedHTML = $.load(html)
 
 let sel = 'tr'
